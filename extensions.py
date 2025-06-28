@@ -46,3 +46,20 @@ flask_session = Session()
 csrf = CSRFProtect()
 babel = Babel()
 compress = Compress()
+
+# Initialize PyMongo for personal finance blueprints
+class MongoWrapper:
+    """Wrapper to provide db access for personal finance blueprints."""
+    def __init__(self, mongo_client):
+        self.client = mongo_client
+        self._db = None
+    
+    @property
+    def db(self):
+        if self._db is None:
+            db_name = os.getenv('SESSION_MONGODB_DB', 'ficodb')
+            self._db = self.client[db_name]
+        return self._db
+
+# Create mongo wrapper instance for personal finance blueprints
+mongo = MongoWrapper(mongo_client)

@@ -309,16 +309,7 @@ def create_app():
         else:
             logger.info(f"Admin user already exists with email: {admin_email}")
     
-    # Register blueprints
-    from personal.admin import admin_bp as personal_admin_bp
-    from personal.auth import auth_bp as personal_auth_bp
-    from personal.bill import bill_bp
-    from personal.budget import budget_bp
-    from personal.emergency_fund import emergency_fund_bp
-    from personal.financial_health import financial_health_bp
-    from personal.learning_hub import learning_hub_bp
-    from personal.net_worth import net_worth_bp
-    from personal.quiz import quiz_bp
+    # Register blueprints - Existing accounting blueprints
     from users.routes import users_bp
     from agents.routes import agents_bp
     from common.routes import common_bp
@@ -333,6 +324,16 @@ def create_app():
     from settings.routes import settings_bp
     from admin.routes import admin_bp
     
+    # Register new personal finance blueprints
+    from personal.bill import bill_bp
+    from personal.budget import budget_bp
+    from personal.emergency_fund import emergency_fund_bp
+    from personal.financial_health import financial_health_bp
+    from personal.learning_hub import learning_hub_bp
+    from personal.net_worth import net_worth_bp
+    from personal.quiz import quiz_bp
+    
+    # Register existing accounting blueprints
     app.register_blueprint(users_bp, url_prefix='/users')
     app.register_blueprint(agents_bp, url_prefix='/agents')
     app.register_blueprint(common_bp, url_prefix='/common')
@@ -346,14 +347,14 @@ def create_app():
     app.register_blueprint(reports_bp, url_prefix='/reports')
     app.register_blueprint(settings_bp, url_prefix='/settings')
     app.register_blueprint(admin_bp, url_prefix='/admin')
-    app.register_blueprint(personal_admin_bp, url_prefix='/personal/admin')
-    app.register_blueprint(personal_auth_bp, url_prefix='/personal/auth')
+    
+    # Register personal finance blueprints
     app.register_blueprint(bill_bp, url_prefix='/personal/bill')
     app.register_blueprint(budget_bp, url_prefix='/personal/budget')
-    app.register_blueprint(emergency_fund_bp, url_prefix='/personal/emergency')
-    app.register_blueprint(financial_health_bp, url_prefix='/personal/health')
-    app.register_blueprint(learning_hub_bp, url_prefix='/personal/learning')
-    app.register_blueprint(net_worth_bp, url_prefix='/personal/networth')
+    app.register_blueprint(emergency_fund_bp, url_prefix='/personal/emergency_fund')
+    app.register_blueprint(financial_health_bp, url_prefix='/personal/financial_health')
+    app.register_blueprint(learning_hub_bp, url_prefix='/personal/learning_hub')
+    app.register_blueprint(net_worth_bp, url_prefix='/personal/net_worth')
     app.register_blueprint(quiz_bp, url_prefix='/personal/quiz')
     
     # Jinja2 globals and filters
@@ -498,6 +499,8 @@ def create_app():
                 return redirect(url_for('dashboard_bp.index'))
             elif current_user.role == 'admin':
                 return redirect(url_for('admin_bp.dashboard'))
+            elif current_user.role == 'personal':
+                return redirect(url_for('general_dashboard'))
             else:
                 return render_template('general/home.html', t=trans, lang=lang)
         try:
@@ -654,6 +657,7 @@ def create_app():
         response.headers['X-Content-Type-Options'] = 'nosniff'
         return response
     
+    # Existing accounting API routes
     @app.route('/api/debt-summary')
     @login_required
     def debt_summary():

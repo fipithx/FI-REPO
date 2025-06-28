@@ -12,9 +12,8 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask_mailman import Mail
 from extensions import mongo_client
-from __init__ import SessionAdapter
 
-logger = SessionAdapter(logging.getLogger(__name__), {})
+logger = logging.getLogger(__name__)
 
 # Initialize limiter and mail as singletons
 _limiter = None
@@ -79,7 +78,7 @@ def requires_role(role):
                 return f(*args, **kwargs)
             if not current_user.is_authenticated:
                 flash(trans_function('login_required', default='Please log in to access this page'), 'danger')
-                return redirect(url_for('personal_auth_bp.signin'))
+                return redirect(url_for('users_bp.login'))
             if current_user.role != role:
                 flash(trans_function('forbidden_access', default='Access denied'), 'danger')
                 return redirect(url_for('index'))
@@ -174,3 +173,20 @@ def close_mongo_db(error=None):
     g.pop('mongo_db', None)
     g.pop('gridfs', None)
     logger.debug("MongoDB request context cleaned up")
+
+def check_mongodb_connection(mongo_client, app):
+    """Check if MongoDB connection is active."""
+    try:
+        if mongo_client is None:
+            logger.error("MongoDB client is None")
+            return False
+        try:
+            mongo_client.admin.command('ping')
+            logger.info("MongoDB connection verified with ping")
+            return True
+        except Exception as e:
+            logger.error(f"MongoDB client ping failed: {str(e)}")
+            return False
+    except Exception as e:
+        logger.error(f"MongoDB connection error: {str(e)}", exc_info=True)
+        return False
