@@ -20,8 +20,7 @@ logger = logging.getLogger('ficore_app')
 # Define the quiz blueprint
 quiz_bp = Blueprint('quiz', __name__, template_folder='templates/QUIZ', url_prefix='/QUIZ')
 
-# Form for Step 1: Personal Information
-class QuizStep1Form(FlaskForm):
+class QuizForm(FlaskForm):
     first_name = StringField(validators=[DataRequired()], render_kw={
         'placeholder': trans('core_first_name_placeholder', default='e.g., Muhammad, Bashir, Umar'),
         'title': trans('core_first_name_title', default='Enter your first name to personalize your quiz results')
@@ -34,75 +33,55 @@ class QuizStep1Form(FlaskForm):
     send_email = BooleanField(default=False, validators=[Optional()], render_kw={
         'title': trans('core_send_email_title', default='Check to receive an email with your quiz results')
     })
-    submit = SubmitField()
-
-    def __init__(self, lang='en', *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.first_name.label.text = trans('core_first_name', default='First Name', lang=lang)
-        self.email.label.text = trans('core_email', default='Email', lang=lang)
-        self.lang.label.text = trans('core_language', default='Language', lang=lang)
-        self.send_email.label.text = trans('core_send_email', default='Send Email', lang=lang)
-        self.submit.label.text = trans('quiz_start_quiz', default='Start Quiz', lang=lang)
-        self.lang.choices = [
-            ('en', trans('core_language_en', default='English', lang=lang)),
-            ('ha', trans('core_language_ha', default='Hausa', lang=lang))
-        ]
-
-# Form for Step 2a: Questions 1-5
-class QuizStep2aForm(FlaskForm):
+    
+    # Quiz questions
     question_1 = RadioField(validators=[DataRequired()], choices=[('Yes', 'Yes'), ('No', 'No')], id='question_1')
     question_2 = RadioField(validators=[DataRequired()], choices=[('Yes', 'Yes'), ('No', 'No')], id='question_2')
     question_3 = RadioField(validators=[DataRequired()], choices=[('Yes', 'Yes'), ('No', 'No')], id='question_3')
     question_4 = RadioField(validators=[DataRequired()], choices=[('Yes', 'Yes'), ('No', 'No')], id='question_4')
     question_5 = RadioField(validators=[DataRequired()], choices=[('Yes', 'Yes'), ('No', 'No')], id='question_5')
+    question_6 = RadioField(validators=[DataRequired()], choices=[('Yes', 'Yes'), ('No', 'No')], id='question_6')
+    question_7 = RadioField(validators=[DataRequired()], choices=[('Yes', 'Yes'), ('No', 'No')], id='question_7')
+    question_8 = RadioField(validators=[DataRequired()], choices=[('Yes', 'Yes'), ('No', 'No')], id='question_8')
+    question_9 = RadioField(validators=[DataRequired()], choices=[('Yes', 'Yes'), ('No', 'No')], id='question_9')
+    question_10 = RadioField(validators=[DataRequired()], choices=[('Yes', 'Yes'), ('No', 'No')], id='question_10')
+    
     submit = SubmitField()
-    back = SubmitField()
 
     def __init__(self, lang='en', *args, **kwargs):
         super().__init__(*args, **kwargs)
+        
+        # Set labels
+        self.first_name.label.text = trans('core_first_name', default='First Name', lang=lang)
+        self.email.label.text = trans('core_email', default='Email', lang=lang)
+        self.lang.label.text = trans('core_language', default='Language', lang=lang)
+        self.send_email.label.text = trans('core_send_email', default='Send Email', lang=lang)
+        self.submit.label.text = trans('quiz_submit_quiz', default='Submit Quiz', lang=lang)
+        
+        self.lang.choices = [
+            ('en', trans('core_language_en', default='English', lang=lang)),
+            ('ha', trans('core_language_ha', default='Hausa', lang=lang))
+        ]
+
+        # Set up questions
         questions = [
             {'id': 'question_1', 'text_key': 'quiz_track_expenses_label', 'text': 'Do you track your expenses regularly?', 'tooltip_key': 'quiz_track_expenses_tooltip', 'icon': '💰'},
             {'id': 'question_2', 'text_key': 'quiz_save_regularly_label', 'text': 'Do you save a portion of your income regularly?', 'tooltip_key': 'quiz_save_regularly_tooltip', 'icon': '💰'},
             {'id': 'question_3', 'text_key': 'quiz_budget_monthly_label', 'text': 'Do you set a monthly budget?', 'tooltip_key': 'quiz_budget_monthly_tooltip', 'icon': '📝'},
             {'id': 'question_4', 'text_key': 'quiz_emergency_fund_label', 'text': 'Do you have an emergency fund?', 'tooltip_key': 'quiz_emergency_fund_tooltip', 'icon': '🚨'},
             {'id': 'question_5', 'text_key': 'quiz_invest_regularly_label', 'text': 'Do you invest your money regularly?', 'tooltip_key': 'quiz_invest_regularly_tooltip', 'icon': '📈'},
-        ]
-        for q in questions:
-            field = getattr(self, q['id'])
-            field.label.text = trans(q['text_key'], default=q['text'], lang=lang)
-            field.description = trans(q['tooltip_key'], default='', lang=lang)
-            field.choices = [(opt, trans(opt, default=opt, lang=lang)) for opt in ['Yes', 'No']]
-
-        self.submit.label.text = trans('core_continue', default='Continue', lang=lang)
-        self.back.label.text = trans('core_back', default='Back', lang=lang)
-
-# Form for Step 2b: Questions 6-10
-class QuizStep2bForm(FlaskForm):
-    question_6 = RadioField(validators=[DataRequired()], choices=[('Yes', 'Yes'), ('No', 'No')], id='question_6')
-    question_7 = RadioField(validators=[DataRequired()], choices=[('Yes', 'Yes'), ('No', 'No')], id='question_7')
-    question_8 = RadioField(validators=[DataRequired()], choices=[('Yes', 'Yes'), ('No', 'No')], id='question_8')
-    question_9 = RadioField(validators=[DataRequired()], choices=[('Yes', 'Yes'), ('No', 'No')], id='question_9')
-    question_10 = RadioField(validators=[DataRequired()], choices=[('Yes', 'Yes'), ('No', 'No')], id='question_10')
-    submit = SubmitField()
-    back = SubmitField()
-
-    def __init__(self, lang='en', *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        questions = [
             {'id': 'question_6', 'text_key': 'quiz_spend_impulse_label', 'text': 'Do you often spend money on impulse?', 'tooltip_key': 'quiz_spend_impulse_tooltip', 'icon': '🛒'},
             {'id': 'question_7', 'text_key': 'quiz_financial_goals_label', 'text': 'Do you set financial goals?', 'tooltip_key': 'quiz_financial_goals_tooltip', 'icon': '🎯'},
             {'id': 'question_8', 'text_key': 'quiz_review_spending_label', 'text': 'Do you review your spending habits regularly?', 'tooltip_key': 'quiz_review_spending_tooltip', 'icon': '🔍'},
             {'id': 'question_9', 'text_key': 'quiz_multiple_income_label', 'text': 'Do you have multiple sources of income?', 'tooltip_key': 'quiz_multiple_income_tooltip', 'icon': '💼'},
             {'id': 'question_10', 'text_key': 'quiz_retirement_plan_label', 'text': 'Do you have a retirement savings plan?', 'tooltip_key': 'quiz_retirement_plan_tooltip', 'icon': '🏖️'},
         ]
+        
         for q in questions:
             field = getattr(self, q['id'])
             field.label.text = trans(q['text_key'], default=q['text'], lang=lang)
             field.description = trans(q['tooltip_key'], default='', lang=lang)
             field.choices = [(opt, trans(opt, default=opt, lang=lang)) for opt in ['Yes', 'No']]
-
-        self.submit.label.text = trans('quiz_see_results', default='See Results', lang=lang)
-        self.back.label.text = trans('core_back', default='Back', lang=lang)
 
 # Helper Functions
 def calculate_score(answers):
@@ -179,191 +158,49 @@ def assign_badges(score, lang='en'):
     })
     return badges
 
-# Routes
-@quiz_bp.route('/step1', methods=['GET', 'POST'])
-def step1():
-    """Handle quiz step 1 form (personal information)."""
+@quiz_bp.route('/main', methods=['GET', 'POST'])
+@custom_login_required
+def main():
+    """Main quiz interface with tabbed layout."""
     if 'sid' not in session:
         create_anonymous_session()
         logger.debug(f"New anonymous session created with sid: {session['sid']}", extra={'session_id': session['sid']})
     lang = session.get('lang', 'en')
     course_id = request.args.get('course_id', 'financial_quiz')
-    form_data = session.get('quiz_data', {})
+    
+    # Initialize form with user data
+    form_data = {}
     if current_user.is_authenticated:
-        form_data['email'] = form_data.get('email', current_user.email)
-        form_data['first_name'] = form_data.get('first_name', current_user.username)
-    form = QuizStep1Form(lang=lang, data=form_data)
+        form_data['email'] = current_user.email
+        form_data['first_name'] = current_user.username
     
-    try:
-        log_tool_usage(
-            mongo,
-            tool_name='quiz',
-            user_id=current_user.id if current_user.is_authenticated else None,
-            session_id=session['sid'],
-            action='step1_view'
-        )
-        if request.method == 'POST':
-            log_tool_usage(
-                mongo,
-                tool_name='quiz',
-                user_id=current_user.id if current_user.is_authenticated else None,
-                session_id=session['sid'],
-                action='step1_submit'
-            )
-            if form.validate_on_submit():
-                session['quiz_data'] = {
-                    'first_name': form.first_name.data,
-                    'email': form.email.data,
-                    'lang': form.lang.data or 'en',
-                    'send_email': form.send_email.data
-                }
-                session['lang'] = form.lang.data or 'en'
-                session.modified = True
-                logger.info(f"Quiz step 1 validated successfully for session {session['sid']}", extra={'session_id': session['sid']})
-                return redirect(url_for('quiz.step2a', course_id=course_id))
-            else:
-                logger.error(f"Form validation failed in step1: {form.errors}", extra={'session_id': session['sid']})
-                flash(trans('quiz_form_errors', default='Please correct the errors in the form.', lang=lang), 'danger')
-        
-        return render_template(
-            'QUIZ/quiz_step1.html',
-            form=form,
-            course_id=course_id,
-            lang=lang,
-            total_steps=3
-        )
-    except Exception as e:
-        logger.error(f"Error in quiz.step1: {str(e)}", extra={'session_id': session['sid']})
-        flash(trans('quiz_error_personal_info', default='An error occurred. Please try again.', lang=lang), 'danger')
-        return render_template('QUIZ/quiz_step1.html', form=form, course_id=course_id, lang=lang, total_steps=3), 500
+    form = QuizForm(lang=lang, data=form_data)
+    
+    log_tool_usage(
+        mongo,
+        tool_name='quiz',
+        user_id=current_user.id if current_user.is_authenticated else None,
+        session_id=session['sid'],
+        action='main_view'
+    )
 
-@quiz_bp.route('/step2a', methods=['GET', 'POST'])
-@custom_login_required
-def step2a():
-    """Handle quiz step 2a form (questions 1-5)."""
-    if 'sid' not in session or 'quiz_data' not in session:
-        logger.warning(f"Session expired or missing quiz_data for session {session.get('sid', 'unknown')}", extra={'session_id': session.get('sid', 'unknown')})
-        flash(trans('session_expired', default='Session expired. Please start again.', lang=session.get('lang', 'en')), 'danger')
-        return redirect(url_for('quiz.step1', course_id=request.args.get('course_id', 'financial_quiz')))
-    
-    lang = session['quiz_data'].get('lang', 'en')
-    course_id = request.args.get('course_id', 'financial_quiz')
-    form = QuizStep2aForm(lang=lang, formdata=request.form if request.method == 'POST' else None)
-    
-    # Preprocessed questions for template
-    questions = [
-        {'id': 'question_1', 'text_key': 'quiz_track_expenses_label', 'text': 'Do you track your expenses regularly?', 'tooltip': 'quiz_track_expenses_tooltip', 'icon': '💰'},
-        {'id': 'question_2', 'text_key': 'quiz_save_regularly_label', 'text': 'Do you save a portion of your income regularly?', 'tooltip': 'quiz_save_regularly_tooltip', 'icon': '💰'},
-        {'id': 'question_3', 'text_key': 'quiz_budget_monthly_label', 'text': 'Do you set a monthly budget?', 'tooltip': 'quiz_budget_monthly_tooltip', 'icon': '📝'},
-        {'id': 'question_4', 'text_key': 'quiz_emergency_fund_label', 'text': 'Do you have an emergency fund?', 'tooltip': 'quiz_emergency_fund_tooltip', 'icon': '🚨'},
-        {'id': 'question_5', 'text_key': 'quiz_invest_regularly_label', 'text': 'Do you invest your money regularly?', 'tooltip': 'quiz_invest_regularly_tooltip', 'icon': '📈'},
-    ]
-    
     try:
-        log_tool_usage(
-            mongo,
-            tool_name='quiz',
-            user_id=current_user.id if current_user.is_authenticated else None,
-            session_id=session['sid'],
-            action='step2a_view'
-        )
+        filter_criteria = {'user_id': current_user.id} if current_user.is_authenticated else {'session_id': session['sid']}
+        
         if request.method == 'POST':
-            log_tool_usage(
-                mongo,
-                tool_name='quiz',
-                user_id=current_user.id if current_user.is_authenticated else None,
-                session_id=session['sid'],
-                action='step2a_submit'
-            )
-            if form.back.data:
-                return redirect(url_for('quiz.step1', course_id=course_id))
-            if form.validate_on_submit():
-                session['quiz_data'].update({
-                    'question_1': form.question_1.data,
-                    'question_2': form.question_2.data,
-                    'question_3': form.question_3.data,
-                    'question_4': form.question_4.data,
-                    'question_5': form.question_5.data,
-                })
-                session.modified = True
-                logger.info(f"Quiz step 2a validated successfully for session {session['sid']}", extra={'session_id': session['sid']})
-                return redirect(url_for('quiz.step2b', course_id=course_id))
-            else:
-                logger.error(f"Form validation failed in step2a: {form.errors}", extra={'session_id': session['sid']})
-                flash(trans('quiz_form_errors', default='Please correct the errors in the form.', lang=lang), 'danger')
-        
-        # Pre-fill form with session data if available
-        for q in questions:
-            if q['id'] in session.get('quiz_data', {}):
-                getattr(form, q['id']).data = session['quiz_data'][q['id']]
-        
-        return render_template(
-            'QUIZ/quiz_step.html',
-            form=form,
-            questions=questions,
-            course_id=course_id,
-            lang=lang,
-            step_num=2,
-            total_steps=3
-        )
-    except Exception as e:
-        logger.error(f"Error in quiz.step2a: {str(e)}", extra={'session_id': session['sid']})
-        flash(trans('quiz_error_questions', default='An error occurred. Please try again.', lang=lang), 'danger')
-        return render_template('QUIZ/quiz_step.html', form=form, questions=questions, course_id=course_id, lang=lang, step_num=2, total_steps=3), 500
+            action = request.form.get('action')
+            
+            if action == 'submit_quiz' and form.validate_on_submit():
+                log_tool_usage(
+                    mongo,
+                    tool_name='quiz',
+                    user_id=current_user.id if current_user.is_authenticated else None,
+                    session_id=session['sid'],
+                    action='submit_quiz'
+                )
 
-@quiz_bp.route('/step2b', methods=['GET', 'POST'])
-@custom_login_required
-def step2b():
-    """Handle quiz step 2b form (questions 6-10) and store results in MongoDB."""
-    if 'sid' not in session or 'quiz_data' not in session:
-        logger.warning(f"Session expired or missing quiz_data for session {session.get('sid', 'unknown')}", extra={'session_id': session.get('sid', 'unknown')})
-        flash(trans('session_expired', default='Session expired. Please start again.', lang=session.get('lang', 'en')), 'danger')
-        return redirect(url_for('quiz.step1', course_id=request.args.get('course_id', 'financial_quiz')))
-    
-    lang = session['quiz_data'].get('lang', 'en')
-    course_id = request.args.get('course_id', 'financial_quiz')
-    form = QuizStep2bForm(lang=lang, formdata=request.form if request.method == 'POST' else None)
-    
-    # Preprocessed questions for template
-    questions = [
-        {'id': 'question_6', 'text_key': 'quiz_spend_impulse_label', 'text': 'Do you often spend money on impulse?', 'tooltip': 'quiz_spend_impulse_tooltip', 'icon': '🛒'},
-        {'id': 'question_7', 'text_key': 'quiz_financial_goals_label', 'text': 'Do you set financial goals?', 'tooltip': 'quiz_financial_goals_tooltip', 'icon': '🎯'},
-        {'id': 'question_8', 'text_key': 'quiz_review_spending_label', 'text': 'Do you review your spending habits regularly?', 'tooltip': 'quiz_review_spending_tooltip', 'icon': '🔍'},
-        {'id': 'question_9', 'text_key': 'quiz_multiple_income_label', 'text': 'Do you have multiple sources of income?', 'tooltip': 'quiz_multiple_income_tooltip', 'icon': '💼'},
-        {'id': 'question_10', 'text_key': 'quiz_retirement_plan_label', 'text': 'Do you have a retirement savings plan?', 'tooltip': 'quiz_retirement_plan_tooltip', 'icon': '🏖️'},
-    ]
-    
-    try:
-        log_tool_usage(
-            mongo,
-            tool_name='quiz',
-            user_id=current_user.id if current_user.is_authenticated else None,
-            session_id=session['sid'],
-            action='step2b_view'
-        )
-        if request.method == 'POST':
-            log_tool_usage(
-                mongo,
-                tool_name='quiz',
-                user_id=current_user.id if current_user.is_authenticated else None,
-                session_id=session['sid'],
-                action='step2b_submit'
-            )
-            if form.back.data:
-                return redirect(url_for('quiz.step2a', course_id=course_id))
-            if form.validate_on_submit():
-                session['quiz_data'].update({
-                    'question_6': form.question_6.data,
-                    'question_7': form.question_7.data,
-                    'question_8': form.question_8.data,
-                    'question_9': form.question_9.data,
-                    'question_10': form.question_10.data,
-                })
-                session.modified = True
-                logger.info(f"Quiz step 2b validated successfully for session {session['sid']}", extra={'session_id': session['sid']})
-                
                 # Calculate results
-                answers = [session['quiz_data'].get(f'question_{i}') for i in range(1, 11)]
+                answers = [getattr(form, f'question_{i}').data for i in range(1, 11)]
                 score = calculate_score(answers)
                 personality = assign_personality(score, lang)
                 badges = assign_badges(score, lang)
@@ -375,27 +212,23 @@ def step2b():
                     'user_id': current_user.id if current_user.is_authenticated else None,
                     'session_id': session['sid'],
                     'created_at': created_at,
-                    'first_name': session['quiz_data'].get('first_name', ''),
-                    'email': session['quiz_data'].get('email', ''),
-                    'send_email': session['quiz_data'].get('send_email', False),
+                    'first_name': form.first_name.data,
+                    'email': form.email.data,
+                    'send_email': form.send_email.data,
                     'personality': personality['name'],
                     'score': score,
                     'badges': badges,
                     'insights': personality['insights'],
                     'tips': personality['tips']
                 }
+                
                 logger.debug(f"Saving quiz result with created_at: {created_at}, type: {type(created_at)}", extra={'session_id': session['sid']})
                 mongo.db.quiz_responses.insert_one(quiz_result)
-                session['quiz_result_id'] = quiz_result['_id']
-                session.modified = True
                 logger.info(f"Successfully saved quiz result {quiz_result['_id']} for session {session['sid']}", extra={'session_id': session['sid']})
-                
-                # Prepare results for display
-                results = quiz_result.copy()
-                results['created_at'] = datetime.fromisoformat(created_at)  # Convert here to ensure datetime for session and email
+                flash(trans('quiz_completed_successfully', default='Quiz completed successfully!'), 'success')
                 
                 # Send email if user opted in
-                if session['quiz_data'].get('send_email') and session['quiz_data'].get('email'):
+                if form.send_email.data and form.email.data:
                     try:
                         config = EMAIL_CONFIG["quiz"]
                         subject = trans(config["subject_key"], default='Your Financial Quiz Results', lang=lang)
@@ -403,142 +236,81 @@ def step2b():
                         send_email(
                             app=current_app,
                             logger=current_app.logger,
-                            to_email=session['quiz_data']['email'],
+                            to_email=form.email.data,
                             subject=subject,
                             template_name=template,
                             data={
-                                "first_name": results['first_name'],
-                                "score": results['score'],
+                                "first_name": quiz_result['first_name'],
+                                "score": quiz_result['score'],
                                 "max_score": 30,
-                                "personality": results['personality'],
-                                "badges": results['badges'],
-                                "insights": results['insights'],
-                                "tips": results['tips'],
-                                "created_at": results['created_at'],
-                                "cta_url": url_for('quiz.results', course_id=course_id, _external=True)
+                                "personality": quiz_result['personality'],
+                                "badges": quiz_result['badges'],
+                                "insights": quiz_result['insights'],
+                                "tips": quiz_result['tips'],
+                                "created_at": datetime.fromisoformat(created_at),
+                                "cta_url": url_for('quiz.main', course_id=course_id, _external=True)
                             },
                             lang=lang
                         )
                     except Exception as e:
                         logger.error(f"Failed to send quiz results email: {str(e)}", extra={'session_id': session['sid']})
                         flash(trans("email_send_failed", default="Failed to send email.", lang=lang), "warning")
-                
-                # Store results in session for immediate display
-                session['quiz_results'] = results
-                session.modified = True
-                
-                return redirect(url_for('quiz.results', course_id=course_id))
-            else:
-                logger.error(f"Form validation failed in step2b: {form.errors}", extra={'session_id': session['sid']})
-                flash(trans('quiz_form_errors', default='Please correct the errors in the form.', lang=lang), 'danger')
+
+        # Get quiz results for display
+        quiz_results = list(mongo.db.quiz_responses.find(filter_criteria).sort('created_at', -1))
         
-        # Pre-fill form with session data if available
-        for q in questions:
-            if q['id'] in session.get('quiz_data', {}):
-                getattr(form, q['id']).data = session['quiz_data'][q['id']]
+        if not quiz_results and current_user.is_authenticated and current_user.email:
+            quiz_results = list(mongo.db.quiz_responses.find({'email': current_user.email}).sort('created_at', -1))
+
+        latest_record = quiz_results[0] if quiz_results else {}
         
+        # Handle created_at conversion for display
+        if latest_record and isinstance(latest_record.get('created_at'), str):
+            try:
+                latest_record['created_at'] = datetime.fromisoformat(latest_record['created_at'])
+            except (TypeError, ValueError) as e:
+                logger.error(f"Failed to parse created_at '{latest_record['created_at']}' in results: {str(e)}", extra={'session_id': session['sid']})
+                latest_record['created_at'] = None
+
+        # Preprocessed questions for template
+        questions = [
+            {'id': 'question_1', 'text_key': 'quiz_track_expenses_label', 'text': 'Do you track your expenses regularly?', 'tooltip': 'quiz_track_expenses_tooltip', 'icon': '💰'},
+            {'id': 'question_2', 'text_key': 'quiz_save_regularly_label', 'text': 'Do you save a portion of your income regularly?', 'tooltip': 'quiz_save_regularly_tooltip', 'icon': '💰'},
+            {'id': 'question_3', 'text_key': 'quiz_budget_monthly_label', 'text': 'Do you set a monthly budget?', 'tooltip': 'quiz_budget_monthly_tooltip', 'icon': '📝'},
+            {'id': 'question_4', 'text_key': 'quiz_emergency_fund_label', 'text': 'Do you have an emergency fund?', 'tooltip': 'quiz_emergency_fund_tooltip', 'icon': '🚨'},
+            {'id': 'question_5', 'text_key': 'quiz_invest_regularly_label', 'text': 'Do you invest your money regularly?', 'tooltip': 'quiz_invest_regularly_tooltip', 'icon': '📈'},
+            {'id': 'question_6', 'text_key': 'quiz_spend_impulse_label', 'text': 'Do you often spend money on impulse?', 'tooltip': 'quiz_spend_impulse_tooltip', 'icon': '🛒'},
+            {'id': 'question_7', 'text_key': 'quiz_financial_goals_label', 'text': 'Do you set financial goals?', 'tooltip': 'quiz_financial_goals_tooltip', 'icon': '🎯'},
+            {'id': 'question_8', 'text_key': 'quiz_review_spending_label', 'text': 'Do you review your spending habits regularly?', 'tooltip': 'quiz_review_spending_tooltip', 'icon': '🔍'},
+            {'id': 'question_9', 'text_key': 'quiz_multiple_income_label', 'text': 'Do you have multiple sources of income?', 'tooltip': 'quiz_multiple_income_tooltip', 'icon': '💼'},
+            {'id': 'question_10', 'text_key': 'quiz_retirement_plan_label', 'text': 'Do you have a retirement savings plan?', 'tooltip': 'quiz_retirement_plan_tooltip', 'icon': '🏖️'},
+        ]
+
         return render_template(
-            'QUIZ/quiz_step.html',
+            'QUIZ/quiz_main.html',
             form=form,
             questions=questions,
+            latest_record=latest_record,
+            insights=latest_record.get('insights', []),
+            tips=latest_record.get('tips', []),
             course_id=course_id,
             lang=lang,
-            step_num=3,
-            total_steps=3
+            max_score=30,
+            trans=trans
         )
-    except Exception as e:
-        logger.error(f"Error in quiz.step2b: {str(e)}", extra={'session_id': session['sid']})
-        flash(trans('quiz_error_questions', default='An error occurred. Please try again.', lang=lang), 'danger')
-        return render_template('QUIZ/quiz_step.html', form=form, questions=questions, course_id=course_id, lang=lang, step_num=3, total_steps=3), 500
 
-@quiz_bp.route('/results', methods=['GET'])
-@custom_login_required
-def results():
-    """Display quiz results from MongoDB."""
-    if 'sid' not in session:
-        create_anonymous_session()
-        logger.warning("No session ID found, created new anonymous session", extra={'session_id': session['sid']})
-    
-    lang = session.get('lang', 'en')
-    course_id = request.args.get('course_id', 'financial_quiz')
-    
-    try:
-        log_tool_usage(
-            mongo,
-            tool_name='quiz',
-            user_id=current_user.id if current_user.is_authenticated else None,
-            session_id=session['sid'],
-            action='results_view'
-        )
-        # Try to fetch results from session first
-        results = session.get('quiz_results')
-        result_source = 'session' if results else 'none'
-        
-        if not results:
-            # Fetch from MongoDB using quiz_result_id or user_id
-            if 'quiz_result_id' in session:
-                quiz_result = mongo.db.quiz_responses.find_one({'_id': session['quiz_result_id']})
-                if quiz_result:
-                    results = quiz_result
-                    result_source = 'quiz_result_id'
-            if not results:
-                # Fallback to latest result by user_id
-                quiz_result = mongo.db.quiz_responses.find_one(
-                    {'user_id': current_user.id} if current_user.is_authenticated else {'session_id': session['sid']},
-                    sort=[('created_at', -1)]
-                )
-                if quiz_result:
-                    results = quiz_result
-                    result_source = 'user_id' if current_user.is_authenticated else 'session_id'
-            if not results and current_user.is_authenticated and current_user.email:
-                # Fallback to email for authenticated users
-                quiz_result = mongo.db.quiz_responses.find_one(
-                    {'email': current_user.email},
-                    sort=[('created_at', -1)]
-                )
-                if quiz_result:
-                    results = quiz_result
-                    result_source = 'email'
-        
-        if not results:
-            logger.warning(f"No quiz results found for session {session['sid']}", extra={'session_id': session['sid']})
-            flash(trans('quiz_no_results', default='No quiz results found. Please take the quiz again.', lang=lang), 'danger')
-            return redirect(url_for('quiz.step1', course_id=course_id))
-        
-        # Log the source and created_at for debugging
-        logger.debug(f"Results fetched from {result_source}, created_at: {results.get('created_at')}, type: {type(results.get('created_at'))}", extra={'session_id': session['sid']})
-        
-        # Handle created_at conversion
-        if isinstance(results.get('created_at'), datetime):
-            # Already a datetime, no conversion needed
-            pass
-        elif isinstance(results.get('created_at'), str):
-            try:
-                results['created_at'] = datetime.fromisoformat(results['created_at'])
-            except (TypeError, ValueError) as e:
-                logger.error(f"Failed to parse created_at '{results['created_at']}' in results: {str(e)}", extra={'session_id': session['sid']})
-                results['created_at'] = None
-        else:
-            logger.error(f"Invalid created_at type: {type(results['created_at'])}, value: {results['created_at']}", extra={'session_id': session['sid']})
-            results['created_at'] = None
-        
-        # Clear session data
-        session.pop('quiz_data', None)
-        session.pop('quiz_results', None)
-        session.pop('quiz_result_id', None)
-        session.modified = True
-        logger.info(f"Displaying quiz results for session {session['sid']} from {result_source}, session data cleared", extra={'session_id': session['sid']})
-        
+    except Exception as e:
+        logger.error(f"Error in quiz.main: {str(e)}", extra={'session_id': session['sid']})
+        flash(trans('quiz_error_results', default='An error occurred while loading quiz. Please try again.', lang=lang), 'danger')
         return render_template(
-            'QUIZ/quiz_results.html',
-            latest_record=results,
-            insights=results.get('insights', []),
-            tips=results.get('tips', []),
+            'QUIZ/quiz_main.html',
+            form=form,
+            questions=[],
+            latest_record={},
+            insights=[],
+            tips=[],
             course_id=course_id,
             lang=lang,
-            max_score=30
-        )
-    except Exception as e:
-        logger.error(f"Error in quiz.results: {str(e)}", extra={'session_id': session['sid']})
-        flash(trans('quiz_error_results', default='An error occurred while loading results. Please try again.', lang=lang), 'danger')
-        return redirect(url_for('quiz.step1', course_id=course_id)), 500
+            max_score=30,
+            trans=trans
+        ), 500
