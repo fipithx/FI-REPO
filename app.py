@@ -58,7 +58,7 @@ def admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if not current_user.is_authenticated:
-            return redirect(url_for('personal_auth_bp.signin'))
+            return redirect(url_for('users_bp.login'))
         if current_user.role != 'admin':
             flash(trans('no_permission', default='You do not have permission to access this page.'), 'danger')
             return redirect(url_for('index'))
@@ -70,7 +70,7 @@ def custom_login_required(f):
     def decorated_function(*args, **kwargs):
         if current_user.is_authenticated or session.get('is_anonymous', False):
             return f(*args, **kwargs)
-        return redirect(url_for('personal_auth_bp.signin', next=request.url))
+        return redirect(url_for('users_bp.login', next=request.url))
     return decorated_function
 
 def ensure_session_id(f):
@@ -250,8 +250,11 @@ def create_app():
         return session.get('lang', request.accept_languages.best_match(['en', 'ha'], default='en'))
     babel.locale_selector = get_locale
     
+    # Configure Flask-Login
     login_manager.init_app(app)
-    login_manager.login_view = 'personal_auth_bp.signin'
+    login_manager.login_view = 'users_bp.login'
+    login_manager.login_message = trans('login_required', default='Please log in to access this page.')
+    login_manager.login_message_category = 'info'
     
     @login_manager.user_loader
     def load_user(user_id):
@@ -328,6 +331,7 @@ def create_app():
     from receipts.routes import receipts_bp
     from reports.routes import reports_bp
     from settings.routes import settings_bp
+    from admin.routes import admin_bp
     
     app.register_blueprint(users_bp, url_prefix='/users')
     app.register_blueprint(agents_bp, url_prefix='/agents')
@@ -341,6 +345,7 @@ def create_app():
     app.register_blueprint(receipts_bp, url_prefix='/receipts')
     app.register_blueprint(reports_bp, url_prefix='/reports')
     app.register_blueprint(settings_bp, url_prefix='/settings')
+    app.register_blueprint(admin_bp, url_prefix='/admin')
     app.register_blueprint(personal_admin_bp, url_prefix='/personal/admin')
     app.register_blueprint(personal_auth_bp, url_prefix='/personal/auth')
     app.register_blueprint(bill_bp, url_prefix='/personal/bill')
@@ -492,7 +497,7 @@ def create_app():
             elif current_user.role == 'trader':
                 return redirect(url_for('dashboard_bp.index'))
             elif current_user.role == 'admin':
-                return redirect(url_for('personal_admin_bp.dashboard'))
+                return redirect(url_for('admin_bp.dashboard'))
             else:
                 return render_template('general/home.html', t=trans, lang=lang)
         try:

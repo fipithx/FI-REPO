@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Tools - FiCore</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <nav class="navbar navbar-expand-lg navbar-dark bg-danger">
+                    <div class="container-fluid">
+                        <a class="navbar-brand" href="{{ url_for('admin_bp.dashboard') }}">FiCore Admin</a>
+                        <div class="navbar-nav ms-auto">
+                            <a class="nav-link" href="{{ url_for('admin_bp.dashboard') }}">Dashboard</a>
+                            <a class="nav-link" href="{{ url_for('admin_bp.manage_users') }}">Users</a>
+                            <a class="nav-link" href="{{ url_for('admin_bp.audit') }}">Audit</a>
+                            <a class="nav-link" href="{{ url_for('users_bp.logout') }}">Logout</a>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+        </div>
+        
+        <div class="row mt-4">
+            <div class="col-12">
+                <h1>Admin Tools & Features</h1>
+                <p class="lead">Access all system tools and features for testing and oversight</p>
+            </div>
+        </div>
+        
+        <div class="row mt-3">
+            {% for tool in tools %}
+                <div class="col-md-4 mb-3">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ tool.name }}</h5>
+                            <p class="card-text">{{ tool.description }}</p>
+                            <a href="{{ tool.url }}" class="btn btn-primary">Access Tool</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="alert alert-info">
+                    <h5>Admin Privileges</h5>
+                    <p>As an admin, you have full access to all features and can:</p>
+                    <ul>
+                        <li>View and manage all user accounts</li>
+                        <li>Access any user's dashboard and data</li>
+                        <li>Test all tools and features</li>
+                        <li>Monitor system activities through audit logs</li>
+                        <li>Credit coins to users</li>
+                        <li>Delete users and their data</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
