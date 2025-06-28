@@ -1,0 +1,314 @@
+{% extends "personal/base.html" %}
+{% block title %}{{ trans('quiz_financial_personality_quiz', default='Financial Personality Quiz', lang=lang) }}{% endblock %}
+{% block extra_head %}
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+{% endblock %}
+{% block content %}
+<div class="container">
+    {% set tool_name = 'quiz_financial_personality_quiz' %}
+    {% set tool_icon = 'fa-user-circle' %}
+    {% set subtitle = trans('quiz_discover_personality', default='Discover your financial personality and get personalized insights', lang=lang) %}
+    {% include 'personal/GENERAL/tool_header.html' %}
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="{{ trans('core_close', default='Close', lang=lang) }}"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <!-- Navigation Tabs -->
+    <ul class="nav nav-tabs mb-4" id="quizTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="take-quiz-tab" data-bs-toggle="tab" data-bs-target="#take-quiz" type="button" role="tab" aria-controls="take-quiz" aria-selected="true">
+                <i class="fas fa-play"></i> {{ trans('quiz_take_quiz', default='Take Quiz', lang=lang) }}
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="results-tab" data-bs-toggle="tab" data-bs-target="#results" type="button" role="tab" aria-controls="results" aria-selected="false">
+                <i class="fas fa-chart-pie"></i> {{ trans('quiz_results', default='Results', lang=lang) }}
+            </button>
+        </li>
+    </ul>
+
+    <!-- Tab Content -->
+    <div class="tab-content" id="quizTabContent">
+        <!-- Take Quiz Tab -->
+        <div class="tab-pane fade show active" id="take-quiz" role="tabpanel" aria-labelledby="take-quiz-tab">
+            <form method="POST" action="{{ url_for('quiz.main') }}" id="quizForm" class="validate-form">
+                {{ form.csrf_token }}
+                <input type="hidden" name="action" value="submit_quiz">
+
+                <!-- Personal Information -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5><i class="fas fa-user"></i> {{ trans('quiz_personal_info', default='Personal Information', lang=lang) }}</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">{{ trans('core_first_name', default='First Name', lang=lang) }}</label>
+                                    {{ form.first_name(class="form-control", placeholder=trans('core_first_name_placeholder', default='e.g., Ahmad', lang=lang)) }}
+                                    <div class="invalid-feedback">{{ trans('core_first_name_required', default='First name is required', lang=lang) }}</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">{{ trans('core_email', default='Email', lang=lang) }}</label>
+                                    {{ form.email(class="form-control", placeholder=trans('core_email_placeholder', default='e.g., ahmad@example.com', lang=lang)) }}
+                                    <div class="invalid-feedback">{{ trans('core_email_required', default='Valid email is required', lang=lang) }}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">{{ trans('core_language', default='Language', lang=lang) }}</label>
+                                    {{ form.lang(class="form-select") }}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3 form-check mt-4">
+                                    {{ form.send_email(class="form-check-input") }}
+                                    <label class="form-check-label">{{ trans('core_send_email', default='Send me my results by email', lang=lang) }}</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quiz Questions -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5><i class="fas fa-question-circle"></i> {{ trans('quiz_questions', default='Quiz Questions', lang=lang) }}</h5>
+                        <div class="progress mt-2">
+                            <div class="progress-bar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" id="quizProgress">0%</div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        {% for question in questions %}
+                            <div class="question-block border-bottom pb-3 mb-3" data-question="{{ loop.index }}">
+                                <div class="mb-2">
+                                    <label class="form-label fw-bold">
+                                        <span class="question-number">{{ loop.index }}.</span>
+                                        <span class="question-icon">{{ question.icon }}</span>
+                                        {{ trans(question.text_key, default=question.text, lang=lang) }}
+                                        <span class="question-status"></span>
+                                    </label>
+                                </div>
+                                <div class="button-container">
+                                    {% for choice_value, choice_label in form[question.id].choices %}
+                                        <input type="radio" class="d-none" name="{{ question.id }}" id="{{ question.id }}_{{ loop.index }}" value="{{ choice_value }}">
+                                        <button type="button" class="btn-quiz-answer {{ 'yes' if choice_value == 'Yes' else 'no' }}" data-input-id="{{ question.id }}_{{ loop.index }}">
+                                            {{ trans(choice_value, default=choice_label, lang=lang) }}
+                                        </button>
+                                    {% endfor %}
+                                </div>
+                                {% if question.tooltip %}
+                                    <small class="form-text text-muted">{{ trans(question.tooltip, default='', lang=lang) }}</small>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-lg" id="submitQuiz" disabled>
+                    <i class="fas fa-chart-pie"></i> {{ trans('quiz_see_results', default='See My Results', lang=lang) }}
+                </button>
+            </form>
+        </div>
+
+        <!-- Results Tab -->
+        <div class="tab-pane fade" id="results" role="tabpanel" aria-labelledby="results-tab">
+            {% if latest_record %}
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <div class="card bg-primary text-white">
+                            <div class="card-body text-center">
+                                <h6>{{ trans('quiz_your_personality', default='Your Personality', lang=lang) }}</h6>
+                                <h4>{{ trans('quiz_' + latest_record.personality.lower() + '_description', default=latest_record.personality, lang=lang) }}</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card bg-success text-white">
+                            <div class="card-body text-center">
+                                <h6>{{ trans('quiz_score', default='Score', lang=lang) }}</h6>
+                                <h4>{{ latest_record.score | default(0) }} / {{ max_score }}</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card bg-info text-white">
+                            <div class="card-body text-center">
+                                <h6>{{ trans('core_created_at', default='Completed', lang=lang) }}</h6>
+                                <h6>{{ latest_record.created_at.strftime('%Y-%m-%d') if latest_record.created_at else trans('core_not_available', default='Not Available', lang=lang) }}</h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Badges -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h6><i class="fas fa-trophy"></i> {{ trans('quiz_badges', default='Badges', lang=lang) }}</h6>
+                    </div>
+                    <div class="card-body">
+                        {% if latest_record.badges %}
+                            {% for badge in latest_record.badges %}
+                                <span class="badge {{ badge.color_class }} me-1 mb-1" title="{{ trans('badge_' + badge.name.lower().replace(' ', '_') + '_desc', default=badge.description | default('No description'), lang=lang) }}">
+                                    {{ trans('badge_' + badge.name.lower().replace(' ', '_'), default=badge.name | default('Unknown'), lang=lang) }}
+                                </span>
+                            {% endfor %}
+                        {% else %}
+                            <p class="text-muted">{{ trans('quiz_no_badges', default='No badges earned yet', lang=lang) }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Insights -->
+                {% if insights %}
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h6><i class="fas fa-lightbulb"></i> {{ trans('quiz_insights', default='Insights', lang=lang) }}</h6>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-unstyled">
+                                {% for insight in insights %}
+                                    <li><i class="fas fa-check-circle text-success"></i> {{ insight }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                {% endif %}
+
+                <!-- Tips -->
+                {% if tips %}
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h6><i class="fas fa-rocket"></i> {{ trans('quiz_tips_for_improving_financial_habits', default='Tips for Improving Financial Habits', lang=lang) }}</h6>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-unstyled">
+                                {% for tip in tips %}
+                                    <li><i class="fas fa-arrow-up text-primary"></i> {{ tip }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                {% endif %}
+
+                <div class="text-center">
+                    <button class="btn btn-primary" onclick="document.getElementById('take-quiz-tab').click()">
+                        <i class="fas fa-redo"></i> {{ trans('quiz_retake_quiz', default='Retake Quiz', lang=lang) }}
+                    </button>
+                </div>
+            {% else %}
+                <div class="card">
+                    <div class="card-body text-center">
+                        <i class="fas fa-user-circle fa-3x mb-3 text-muted"></i>
+                        <p>{{ trans('quiz_no_results', default='No quiz results available', lang=lang) }}</p>
+                        <p>{{ trans('quiz_complete_quiz', default='Complete the quiz to see your financial personality results.', lang=lang) }}</p>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Share Ficore Africa Section -->
+    {% if current_user.is_authenticated %}
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5>{{ trans('share_ficore', default='Share Ficore Africa with Friends', lang=lang) }}</h5>
+            </div>
+            <div class="card-body">
+                <p>{{ trans('core_share_ficore_invite', default='Invite your friends to join Ficore Africa and manage their finances better!', lang=lang) }}</p>
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" id="referralLink" value="{{ url_for('auth.signup', ref=current_user.referral_code, _external=True) }}" readonly>
+                    <button class="btn btn-primary" type="button" onclick="copyReferralLink()">{{ trans('core_profile_copy_link', default='Copy', lang=lang) }}</button>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const questions = document.querySelectorAll('.question-block');
+    const submitButton = document.getElementById('submitQuiz');
+    const progressBar = document.getElementById('quizProgress');
+    let answeredQuestions = 0;
+
+    function updateProgress() {
+        const percentage = (answeredQuestions / questions.length) * 100;
+        progressBar.style.width = percentage + '%';
+        progressBar.textContent = Math.round(percentage) + '%';
+        progressBar.setAttribute('aria-valuenow', percentage);
+        
+        submitButton.disabled = answeredQuestions < questions.length;
+    }
+
+    questions.forEach(question => {
+        const buttons = question.querySelectorAll('.btn-quiz-answer');
+        const radios = question.querySelectorAll('input[type="radio"]');
+        const statusSpan = question.querySelector('.question-status');
+        let isAnswered = false;
+
+        buttons.forEach(button => {
+            button.addEventListener('click', function() {
+                // Remove active class from all buttons in this question
+                buttons.forEach(btn => btn.classList.remove('active'));
+                // Add active class to clicked button
+                this.classList.add('active');
+                
+                // Check the corresponding radio input
+                const inputId = this.getAttribute('data-input-id');
+                const radio = document.getElementById(inputId);
+                radio.checked = true;
+                
+                // Update question status
+                if (!isAnswered) {
+                    answeredQuestions++;
+                    isAnswered = true;
+                }
+                statusSpan.innerHTML = '<i class="fas fa-check text-success"></i>';
+                updateProgress();
+            });
+        });
+
+        // Initialize status for pre-selected answers
+        radios.forEach(radio => {
+            if (radio.checked) {
+                const button = question.querySelector(`.btn-quiz-answer[data-input-id="${radio.id}"]`);
+                if (button) {
+                    button.classList.add('active');
+                    statusSpan.innerHTML = '<i class="fas fa-check text-success"></i>';
+                    if (!isAnswered) {
+                        answeredQuestions++;
+                        isAnswered = true;
+                    }
+                }
+            }
+        });
+    });
+
+    // Initial progress update
+    updateProgress();
+
+    // Copy referral link
+    window.copyReferralLink = function() {
+        const referralLink = document.getElementById('referralLink');
+        referralLink.select();
+        document.execCommand('copy');
+        alert('{{ trans('profile_link_copied', default='Referral link copied to clipboard!', lang=lang) }}');
+    };
+});
+</script>
+{% endblock %}
