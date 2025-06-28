@@ -412,17 +412,19 @@ def initialize_database(app):
         logger.error(f"Failed to initialize database indexes/courses: {str(e)}", exc_info=True)
         raise
 
-# User class for Flask-Login
+# User class for Flask-Login - aligned with users blueprint expectations
 class User:
-    def __init__(self, id, email, username=None, role='personal', display_name=None, is_admin=False, setup_complete=False, coin_balance=0):
+    def __init__(self, id, email, display_name=None, role='personal', username=None, is_admin=False, setup_complete=False, coin_balance=0, language='en', dark_mode=False):
         self.id = id
         self.email = email
-        self.username = username or email.split('@')[0]
+        self.username = username or display_name or email.split('@')[0]
         self.role = role
         self.display_name = display_name or self.username
         self.is_admin = is_admin
         self.setup_complete = setup_complete
         self.coin_balance = coin_balance
+        self.language = language
+        self.dark_mode = dark_mode
 
     @property
     def is_authenticated(self):
@@ -440,25 +442,27 @@ class User:
         return str(self.id)
 
     def get(self, key, default=None):
-        """Get attribute value with default fallback"""
+        """Get attribute value with default fallback - matches users blueprint usage"""
         return getattr(self, key, default)
 
-# User management functions
+# User management functions - aligned with users blueprint
 def create_user(db, user_data):
-    """Create a new user in the database"""
+    """Create a new user in the database - matches users blueprint expectations"""
     try:
-        user_id = str(uuid.uuid4())
+        # Use username as _id to match users blueprint pattern
+        user_id = user_data.get('username', user_data['email'].split('@')[0]).lower()
+        
         user_doc = {
             '_id': user_id,
             'email': user_data['email'].lower(),
-            'username': user_data.get('username', user_data['email'].split('@')[0]).lower(),
             'password': user_data['password_hash'],
             'role': user_data.get('role', 'personal'),
-            'display_name': user_data.get('display_name', user_data.get('username', user_data['email'].split('@')[0])),
+            'display_name': user_data.get('display_name', user_id),
             'is_admin': user_data.get('is_admin', False),
             'setup_complete': user_data.get('setup_complete', False),
-            'coin_balance': user_data.get('coin_balance', 0),
+            'coin_balance': user_data.get('coin_balance', 10),
             'language': user_data.get('lang', 'en'),
+            'dark_mode': user_data.get('dark_mode', False),
             'created_at': user_data.get('created_at', datetime.utcnow()),
             'business_details': user_data.get('business_details'),
             'personal_details': user_data.get('personal_details'),
@@ -471,31 +475,35 @@ def create_user(db, user_data):
         return User(
             id=user_id,
             email=user_doc['email'],
-            username=user_doc['username'],
+            username=user_id,
             role=user_doc['role'],
             display_name=user_doc['display_name'],
             is_admin=user_doc['is_admin'],
             setup_complete=user_doc['setup_complete'],
-            coin_balance=user_doc['coin_balance']
+            coin_balance=user_doc['coin_balance'],
+            language=user_doc['language'],
+            dark_mode=user_doc['dark_mode']
         )
     except Exception as e:
         logger.error(f"Error creating user: {str(e)}")
         raise
 
 def get_user_by_email(db, email):
-    """Get user by email address"""
+    """Get user by email address - matches users blueprint expectations"""
     try:
         user_doc = db.users.find_one({'email': email.lower()})
         if user_doc:
             return User(
                 id=user_doc['_id'],
                 email=user_doc['email'],
-                username=user_doc.get('username', user_doc['email'].split('@')[0]),
+                username=user_doc['_id'],  # username is the _id in users blueprint
                 role=user_doc.get('role', 'personal'),
                 display_name=user_doc.get('display_name'),
                 is_admin=user_doc.get('is_admin', False),
                 setup_complete=user_doc.get('setup_complete', False),
-                coin_balance=user_doc.get('coin_balance', 0)
+                coin_balance=user_doc.get('coin_balance', 0),
+                language=user_doc.get('language', 'en'),
+                dark_mode=user_doc.get('dark_mode', False)
             )
         return None
     except Exception as e:
@@ -503,19 +511,21 @@ def get_user_by_email(db, email):
         return None
 
 def get_user(db, user_id):
-    """Get user by ID"""
+    """Get user by ID - matches users blueprint expectations"""
     try:
         user_doc = db.users.find_one({'_id': user_id})
         if user_doc:
             return User(
                 id=user_doc['_id'],
                 email=user_doc['email'],
-                username=user_doc.get('username', user_doc['email'].split('@')[0]),
+                username=user_doc['_id'],  # username is the _id in users blueprint
                 role=user_doc.get('role', 'personal'),
                 display_name=user_doc.get('display_name'),
                 is_admin=user_doc.get('is_admin', False),
                 setup_complete=user_doc.get('setup_complete', False),
-                coin_balance=user_doc.get('coin_balance', 0)
+                coin_balance=user_doc.get('coin_balance', 0),
+                language=user_doc.get('language', 'en'),
+                dark_mode=user_doc.get('dark_mode', False)
             )
         return None
     except Exception as e:
