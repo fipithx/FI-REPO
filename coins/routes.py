@@ -8,13 +8,15 @@ from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
 from gridfs import GridFS
 from wtforms import FloatField, StringField, SelectField, SubmitField, validators
-from app import limiter
-from utils import trans_function, requires_role, check_coin_balance, get_mongo_db, is_admin, get_user_query
+from utils import trans_function, requires_role, check_coin_balance, get_mongo_db, is_admin, get_user_query, get_limiter
 from pymongo import errors
 
 logger = getLogger(__name__)
 
 coins_bp = Blueprint('coins', __name__, template_folder='templates/coins')
+
+# Initialize limiter
+limiter = get_limiter(current_app)
 
 class PurchaseForm(FlaskForm):
     amount = SelectField(

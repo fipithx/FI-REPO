@@ -21,6 +21,7 @@ from session_utils import create_anonymous_session
 from translations.core import trans
 from extensions import mongo_client, login_manager, flask_session, csrf, babel, compress
 from flask_login import login_required, current_user
+from flask_wtf.csrf import CSRFError
 
 # Load environment variables
 load_dotenv()
@@ -313,7 +314,6 @@ def create_app():
     from users.routes import users_bp
     from agents.routes import agents_bp
     from common.routes import common_bp
-    from coins.routes import coins_bp
     from creditors.routes import creditors_bp
     from dashboard.routes import dashboard_bp
     from debtors.routes import debtors_bp
@@ -322,7 +322,6 @@ def create_app():
     from receipts.routes import receipts_bp
     from reports.routes import reports_bp
     from settings.routes import settings_bp
-    from admin.routes import admin_bp
     
     # Register new personal finance blueprints
     from personal.bill import bill_bp
@@ -335,18 +334,52 @@ def create_app():
     
     # Register existing accounting blueprints
     app.register_blueprint(users_bp, url_prefix='/users')
+    logger.info("Registered users blueprint")
+    
     app.register_blueprint(agents_bp, url_prefix='/agents')
+    logger.info("Registered agents blueprint")
+    
     app.register_blueprint(common_bp, url_prefix='/common')
-    app.register_blueprint(coins_bp, url_prefix='/coins')
+    
+    # Try to register coins blueprint with error handling
+    try:
+        from coins.routes import coins_bp
+        app.register_blueprint(coins_bp, url_prefix='/coins')
+        logger.info("Registered coins blueprint")
+    except Exception as e:
+        logger.warning(f"Could not import coins blueprint: {str(e)}")
+    
     app.register_blueprint(creditors_bp, url_prefix='/creditors')
+    logger.info("Registered creditors blueprint")
+    
     app.register_blueprint(dashboard_bp, url_prefix='/dashboard')
+    logger.info("Registered dashboard blueprint")
+    
     app.register_blueprint(debtors_bp, url_prefix='/debtors')
+    logger.info("Registered debtors blueprint")
+    
     app.register_blueprint(inventory_bp, url_prefix='/inventory')
+    logger.info("Registered inventory blueprint")
+    
     app.register_blueprint(payments_bp, url_prefix='/payments')
+    logger.info("Registered payments blueprint")
+    
     app.register_blueprint(receipts_bp, url_prefix='/receipts')
+    logger.info("Registered receipts blueprint")
+    
     app.register_blueprint(reports_bp, url_prefix='/reports')
+    logger.info("Registered reports blueprint")
+    
     app.register_blueprint(settings_bp, url_prefix='/settings')
-    app.register_blueprint(admin_bp, url_prefix='/admin')
+    logger.info("Registered settings blueprint")
+    
+    # Try to register admin blueprint with error handling
+    try:
+        from admin.routes import admin_bp
+        app.register_blueprint(admin_bp, url_prefix='/admin')
+        logger.info("Registered admin blueprint")
+    except Exception as e:
+        logger.warning(f"Could not import admin blueprint: {str(e)}")
     
     # Register personal finance blueprints
     app.register_blueprint(bill_bp, url_prefix='/personal/bill')
@@ -356,6 +389,7 @@ def create_app():
     app.register_blueprint(learning_hub_bp, url_prefix='/personal/learning_hub')
     app.register_blueprint(net_worth_bp, url_prefix='/personal/net_worth')
     app.register_blueprint(quiz_bp, url_prefix='/personal/quiz')
+    logger.info("Registered all personal finance blueprints")
     
     # Jinja2 globals and filters
     app.jinja_env.globals.update(
@@ -968,7 +1002,7 @@ def create_app():
         logger.error(f"Server error: {str(e)}", exc_info=True)
         return render_template('errors/500.html', message=trans('internal_server_error', default='Internal server error'), t=trans, lang=lang), 500
     
-    @app.errorhandler(csrf.CSRFError)
+    @app.errorhandler(CSRFError)
     def handle_csrf_error(e):
         lang = session.get('lang', 'en')
         logger.error(f"CSRF error: {str(e)}")
@@ -1016,3 +1050,9 @@ def create_app():
             logger.error(f"Error in before_request: {str(e)}", exc_info=True)
     
     return app
+
+# Create the app instance
+app = create_app()
+
+if __name__ == '__main__':
+    app.run(debug=True)

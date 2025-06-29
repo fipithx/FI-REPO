@@ -3,14 +3,16 @@ from flask_login import login_required, current_user
 from flask_wtf import FlaskForm
 from wtforms import StringField, FloatField, validators, SubmitField
 from datetime import datetime
-from utils import trans_function, requires_role, get_mongo_db, is_admin, get_user_query
+from utils import trans_function, requires_role, get_mongo_db, is_admin, get_user_query, get_limiter
 from bson import ObjectId
-from app import limiter
 import logging
 
 logger = logging.getLogger(__name__)
 
 admin_bp = Blueprint('admin', __name__, template_folder='templates/admin')
+
+# Initialize limiter
+limiter = get_limiter(current_app)
 
 class CreditForm(FlaskForm):
     user_id = StringField(trans_function('user_id', default='User ID'), [
