@@ -54,6 +54,14 @@ try:
     from .translations_dashboard import DASHBOARD_TRANSLATIONS
     from .translations_mailersend import MAILERSEND_TRANSLATIONS
     
+    # Import main_translations.py (legacy accounting tools file) if it exists
+    try:
+        from .main_translations import TRANSLATIONS as MAIN_TRANSLATIONS
+        logger.info("Successfully imported main_translations.py")
+    except ImportError:
+        logger.warning("main_translations.py not found, using empty translations")
+        MAIN_TRANSLATIONS = {'en': {}, 'ha': {}}
+        
 except ImportError as e:
     logger.error(f"Failed to import translation module: {str(e)}", exc_info=True)
     raise
@@ -85,6 +93,7 @@ translation_modules = {
     'common_features': COMMON_FEATURES_TRANSLATIONS,
     
     # Legacy modules
+    'main': MAIN_TRANSLATIONS,  # Legacy accounting tools from main_translations.py
     'dashboard': DASHBOARD_TRANSLATIONS,
     'mailersend': MAILERSEND_TRANSLATIONS,
 }
@@ -126,7 +135,8 @@ KEY_PREFIX_TO_MODULE = {
     'api_': 'common_features',
     'webhook_': 'common_features',
     
-    # Legacy prefixes
+    # Legacy prefixes - these will check main_translations.py first
+    'main_': 'main',  # Keys from main_translations.py
     'dashboard_': 'dashboard',
     'mailersend_': 'mailersend',
 }
@@ -143,6 +153,13 @@ GENERAL_SPECIFIC_KEYS = {
     'Save', 'Cancel', 'Submit', 'Edit', 'Delete', 'Add', 'Create', 'Update',
     'View', 'Search', 'Filter', 'Sort', 'Export', 'Import', 'Print', 'Download',
     'Upload', 'Back', 'Next', 'Previous', 'Continue', 'Finish', 'Close', 'Open'
+}
+
+# Legacy accounting tools keys that might be in main_translations.py without prefixes
+MAIN_SPECIFIC_KEYS = {
+    'Accounting', 'Ledger', 'Journal', 'Balance', 'Assets', 'Liabilities', 'Equity',
+    'Revenue', 'Expenses', 'Income', 'Statement', 'Trial', 'Chart', 'Accounts',
+    'Debit', 'Credit', 'Transaction', 'Entry', 'Posting', 'Reconciliation'
 }
 
 # Log loaded translations
@@ -169,6 +186,7 @@ def trans(key: str, lang: Optional[str] = None, **kwargs: str) -> str:
         - Logs warnings for missing translations.
         - Uses g.logger if available, else the default logger.
         - Checks general translations for common UI elements without prefixes.
+        - Checks main_translations.py for legacy accounting tools keys.
     """
     current_logger = g.get('logger', logger) if has_request_context() else logger
     session_id = session.get('sid', 'no-session-id') if has_request_context() else 'no-session-id'
@@ -197,13 +215,23 @@ def trans(key: str, lang: Optional[str] = None, **kwargs: str) -> str:
     elif key in GENERAL_SPECIFIC_KEYS:
         module_name = 'general'
     
-    # If no specific module found and key doesn't have a prefix, check general first
+    # Check for main/accounting-specific keys (legacy)
+    elif key in MAIN_SPECIFIC_KEYS:
+        module_name = 'main'
+    
+    # If no specific module found and key doesn't have a prefix, check in order: main, general
     elif '_' not in key:
-        # Try general module first for unprefixed keys
-        general_module = translation_modules.get('general', {})
-        general_lang_dict = general_module.get(lang, {})
-        if key in general_lang_dict:
-            module_name = 'general'
+        # Try main module first for unprefixed accounting keys
+        main_module = translation_modules.get('main', {})
+        main_lang_dict = main_module.get(lang, {})
+        if key in main_lang_dict:
+            module_name = 'main'
+        else:
+            # Try general module for unprefixed general keys
+            general_module = translation_modules.get('general', {})
+            general_lang_dict = general_module.get(lang, {})
+            if key in general_lang_dict:
+                module_name = 'general'
 
     module = translation_modules.get(module_name, translation_modules['general'])
     lang_dict = module.get(lang, {})
@@ -264,7 +292,7 @@ def get_module_translations(module_name: str, lang: Optional[str] = None) -> Dic
     Get translations for a specific module and language.
     
     Args:
-        module_name: Name of the translation module (e.g., 'general', 'bill', 'quiz').
+        module_name: Name of the translation module (e.g., 'general', 'main', 'bill', 'quiz').
         lang: Language code ('en', 'ha'). Defaults to session['lang'] or 'en'.
     
     Returns:
