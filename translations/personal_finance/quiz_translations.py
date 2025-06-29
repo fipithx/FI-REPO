@@ -1,24 +1,10 @@
+"""
+Financial personality quiz translations for personal finance tools
+"""
+
 QUIZ_TRANSLATIONS = {
     'en': {
         # Quiz-specific
-        'An error occurred. Please try again.': 'An error occurred. Please try again.',
-        'Kuskure ya faru': 'An error occurred',
-        'quiz_step_progress': 'Step {step_num} of {total_steps}',  # Updated to named placeholders
-        'Enter Your Personal Information': 'Enter Your Personal Information',
-        'badge_first_quiz_completed': 'First Quiz Completed!',
-        'Step 3 of 3': 'Step 3 of 3',
-        'quiz_not_completed': 'Quiz not completed.',
-        'quiz_go_personality_quiz': 'Go to Personality Quiz',
-        'See Results': 'See Results',
-        'badge_financial_guru': 'Financial Guru',
-        'badge_financial_guru_desc': 'Completed the financial personality quiz with a strong understanding.',
-        'badge_first_quiz': 'First Quiz Taker',
-        'badge_first_quiz_desc': 'Completed their first financial personality quiz.',
-        'Discover your financial personality and insights': 'Discover your financial personality and insights',
-        'quiz_personality_quiz': 'Personality Quiz',
-        'quiz_assess_literacy': 'Assess your financial literacy & personality.',
-        'quiz_start_personality_quiz': 'Start Personality Quiz',
-        'badge_first_quiz_completed_desc': 'You\'ve completed your first quiz! Keep learning and growing!',
         'quiz_financial_personality_quiz': 'Personality Quiz',
         'quiz_your_financial_personality_results': 'Your Financial Personality Results',
         'quiz_your_financial_personality_results_subtitle': 'Discover your financial personality and insights',
@@ -38,8 +24,21 @@ QUIZ_TRANSLATIONS = {
         'quiz_insights': 'Insights',
         'quiz_tips_for_improving_financial_habits': 'Tips for Improving Financial Habits',
         'quiz_retake_quiz': 'Retake Quiz',
+        'quiz_step_progress': 'Step {step_num} of {total_steps}',
+        'quiz_personality_quiz': 'Personality Quiz',
+        'quiz_assess_literacy': 'Assess your financial literacy & personality.',
+        'quiz_start_personality_quiz': 'Start Personality Quiz',
+        'quiz_go_personality_quiz': 'Go to Personality Quiz',
+        'quiz_not_completed': 'Quiz not completed.',
         'session_expired': 'Session expired. Please start again.',
         'An error occurred': 'An error occurred. Please try again.',
+        'Enter Your Personal Information': 'Enter Your Personal Information',
+        'Step 3 of 3': 'Step 3 of 3',
+        'See Results': 'See Results',
+        'Yes': 'Yes',
+        'No': 'No',
+        'Discover your financial personality and insights': 'Discover your financial personality and insights',
+        
         # Question labels
         'quiz_track_expenses_label': 'Do you track your expenses regularly?',
         'quiz_save_regularly_label': 'Do you save a portion of your income regularly?',
@@ -51,6 +50,7 @@ QUIZ_TRANSLATIONS = {
         'quiz_review_spending_label': 'Do you review your spending habits regularly?',
         'quiz_multiple_income_label': 'Do you have multiple sources of income?',
         'quiz_retirement_plan_label': 'Do you have a retirement savings plan?',
+        
         # Question tooltips (updated with conversational tone and Nigerian references)
         'quiz_track_expenses_tooltip': 'Keeping an eye on your kudi (money) helps you see where it flows — like checking your Opay or PiggyVest transactions.',
         'quiz_save_regularly_tooltip': 'Saving regularly is key to financial security — think of it as building your own Esusu or Ajo fund.',
@@ -62,34 +62,37 @@ QUIZ_TRANSLATIONS = {
         'quiz_review_spending_tooltip': 'Reviewing your spending habits helps you stay on track — like checking your monthly statements on your banking app.',
         'quiz_multiple_income_tooltip': 'Having multiple income streams can boost your financial stability — think of it as diversifying your hustles.',
         'quiz_retirement_plan_tooltip': 'Planning for retirement ensures a comfortable future — it\'s never too early to start your own pension plan.',
-        # Options
-        'Yes': 'Yes',
-        'No': 'No',
+        
         # Personality types
         'quiz_planner_description': 'You plan your finances meticulously.',
         'quiz_saver_description': 'You prioritize saving consistently.',
         'quiz_balanced_description': 'You maintain a balanced financial approach.',
         'quiz_spender_description': 'You enjoy spending freely.',
         'quiz_avoider_description': 'You avoid financial planning.',
+        
         # Insights
         'quiz_insight_planner_1': 'You have a strong grasp of financial planning.',
         'quiz_insight_saver_1': 'You excel at saving regularly.',
         'quiz_insight_balanced_1': 'You balance saving and spending well.',
         'quiz_insight_spender_1': 'Spending is a strength, but can be controlled.',
         'quiz_insight_avoider_1': 'Planning feels challenging but is learnable.',
+        
         # Tips
         'quiz_tip_planner_1': 'Continue setting long-term goals.',
         'quiz_tip_saver_1': 'Consider investing to grow your savings.',
         'quiz_tip_balanced_1': 'Try a budgeting app to optimize habits.',
         'quiz_tip_spender_1': 'Track expenses to avoid overspending.',
         'quiz_tip_avoider_1': 'Start with a simple monthly budget.',
+        
         # Badges
+        'badge_first_quiz_completed': 'First Quiz Completed!',
+        'badge_first_quiz_completed_desc': 'You\'ve completed your first quiz! Keep learning and growing!',
         'badge_financial_guru': 'Financial Guru',
-        'badge_financial_guru_desc': 'Awarded for excellent financial planning.',
+        'badge_financial_guru_desc': 'Completed the financial personality quiz with a strong understanding.',
+        'badge_first_quiz': 'First Quiz Taker',
+        'badge_first_quiz_desc': 'Completed their first financial personality quiz.',
         'badge_savings_star': 'Savings Star',
         'badge_savings_star_desc': 'Recognized for consistent saving habits.',
-        'badge_first_quiz': 'First Quiz Completed',
-        'badge_first_quiz_desc': 'Completed your first financial quiz.',
     },
     'ha': {
         # Quiz-specific
@@ -112,8 +115,21 @@ QUIZ_TRANSLATIONS = {
         'quiz_insights': 'Fahimta',
         'quiz_tips_for_improving_financial_habits': 'Shawara don Inganta Halayen Kuɗi',
         'quiz_retake_quiz': 'Sake Yin Tambayoyin',
+        'quiz_step_progress': 'Mataki {step_num} na {total_steps}',
+        'quiz_personality_quiz': 'Gwajin Hali',
+        'quiz_assess_literacy': 'Gwada hali da ilimin ku akan kuɗi',
+        'quiz_start_personality_quiz': 'Fara Gwajin Halaye',
+        'quiz_go_personality_quiz': 'Je zuwa Gwajin Halayya',
+        'quiz_not_completed': 'Ba a kammala gwaji ba.',
         'session_expired': 'Zaman ya ƙare. Da fatan za a sake farawa.',
         'An error occurred': 'Kuskure ya faru. Da fatan za a sake gwadawa.',
+        'Enter Your Personal Information': 'Shigar da Bayanan Ku na Sirri',
+        'Step 3 of 3': 'Mataki na 3 cikin 3',
+        'See Results': 'Duba Sakamako',
+        'Yes': 'Eh',
+        'No': 'A\'a',
+        'Discover your financial personality and insights': 'Gano halayen ku na kuɗi da fahimta',
+        
         # Question labels
         'quiz_track_expenses_label': 'Kana kiyaye kashe kuɗinka akai-akai?',
         'quiz_save_regularly_label': 'Kana ajiye wani yanki na kuɗin shigarka akai-akai?',
@@ -125,6 +141,7 @@ QUIZ_TRANSLATIONS = {
         'quiz_review_spending_label': 'Kana duba halayen kashe kuɗinka akai-akai?',
         'quiz_multiple_income_label': 'Kana da hanyoyin samun kuɗi da yawa?',
         'quiz_retirement_plan_label': 'Kana da shirin ajiyar kuɗi na ritaya?',
+        
         # Question tooltips (updated with conversational tone and Nigerian references)
         'quiz_track_expenses_tooltip': 'Kiyaye idanu akan kuɗin ku yana taimaka muku ganin inda yake gudana — kamar duba ma\'amalar ku ta Opay ko PiggyVest.',
         'quiz_save_regularly_tooltip': 'Ajiye kuɗi akai-akai shine mabuɗin tsaron kuɗi — ka yi tunanin hakan a matsayin gina asusun Esusu ko Ajo na ku.',
@@ -136,56 +153,36 @@ QUIZ_TRANSLATIONS = {
         'quiz_review_spending_tooltip': 'Duba halayen kashe kuɗin ku yana taimaka muku kasancewa akan hanya — kamar duba bayanan ku na wata-wata akan manhajar banki ta ku.',
         'quiz_multiple_income_tooltip': 'Samun hanyoyin samun kuɗi da yawa na iya ƙarfafa kwanciyar hankalin ku na kuɗi — ka yi tunanin hakan a matsayin bambanta ayyukan ku.',
         'quiz_retirement_plan_tooltip': 'Tsara ritaya yana tabbatar da makoma mai daɗi — ba a yi latti ba don fara shirin fansho na ku.',
-        # Options
-        'Yes': 'Eh',
-        'No': 'A’a',
+        
         # Personality types
         'quiz_planner_description': 'Kana tsara kuɗinka da kyau sosai.',
         'quiz_saver_description': 'Kana ba da fifiko ga ajiya akai-akai.',
         'quiz_balanced_description': 'Kana kiyaye daidaiton kuɗi.',
         'quiz_spender_description': 'Kana jin daɗin kashe kuɗi ba tare da iyaka ba.',
         'quiz_avoider_description': 'Kana guje wa tsara kuɗi.',
+        
         # Insights
         'quiz_insight_planner_1': 'Kana da ƙwarewa sosai a tsara kuɗi.',
         'quiz_insight_saver_1': 'Ka fi kowa a ajiya akai-akai.',
         'quiz_insight_balanced_1': 'Kana daidaita ajiya da kashewa sosai.',
         'quiz_insight_spender_1': 'Kashewa shine ƙarfinka, amma za a iya sarrafa shi.',
         'quiz_insight_avoider_1': 'Tsara kuɗi yana da ƙalubale amma ana iya koya.',
+        
         # Tips
         'quiz_tip_planner_1': 'Ci gaba da saita manufofin kuɗi na dogon lokaci.',
         'quiz_tip_saver_1': 'Ka ji daɗin saka hannun jari don haɓaka ajiyarka.',
         'quiz_tip_balanced_1': 'Gwada amfani da manhajar kasafin kuɗi don inganta halayenka.',
         'quiz_tip_spender_1': 'Kiyaye kashe kuɗinka don guje wa kashewa fiye da kima.',
         'quiz_tip_avoider_1': 'Fara da sauƙin kasafin kuɗi na wata-wata.',
+        
+        # Badges
         'badge_first_quiz_completed': 'An Kammala Gwaji na Farko!',
         'badge_first_quiz_completed_desc': 'Kun kammala gwaji na farko! Ku ci gaba da koyo da girma!',
-        # Badges
-        'badge_gwarzon_kuɗi_desc': 'Kun nuna kyakkyawan ilimin kuɗi kuma kun sami lambar yabo ta Gwarzon Kuɗi!',
-        'badge_gwarzon_kuɗi': 'Gwarzon Kuɗi',
-        'badge_wanda_ya_fara_ɗaukar_gwaji_desc': 'Kun kammala gwajin ku na farko! Ku ci gaba da koyo da girma!',
-        'badge_wanda_ya_fara_ɗaukar_gwaji': 'Wanda Ya Fara Ɗaukar Gwaji',
-        'badge_financial_guru': 'Guru na Kuɗi',
-        'badge_financial_guru_desc': 'An ba da kyauta saboda kyakkyawan tsara kuɗi.',
-        'badge_savings_star': 'Tauraron Ajiya',
-        'badge_savings_star_desc': 'An gane shi saboda halayen ajiya akai-akai.',
-        'badge_first_quiz': 'An Kammala Tambayoyin Farko',
-        'badge_first_quiz_desc': 'Ka kammala tambayoyin kuɗi na farko.',
-        'An error occurred. Please try again.': 'Wani kuskure ya faru. Da fatan za a sake gwadawa.',
-        'quiz_personality_quiz': 'Gwajin Hali',
-        'quiz_assess_literacy': 'Gwada hali da ilimin ku akan kuɗi',
-        'quiz_step_progress': 'Mataki {step_num} na {total_steps}',  # Updated to named placeholders
-        'Enter Your Personal Information': 'Shigar da Bayanan Ku na Sirri',
-        'quiz_start_personality_quiz': 'Fara Gwajin Halaye',
-        'Kuskure ya faru': 'Kuskure ya faru',
-        'Shigar da Bayanan Ka': 'Shigar da Bayanan Ka',
-        'Step 3 of 3': 'Mataki na 3 cikin 3',
-        'See Results': 'Duba Sakamako',
-        'quiz_not_completed': 'Ba a kammala gwaji ba.',
-        'quiz_go_personality_quiz': 'Je zuwa Gwajin Halayya',
         'badge_financial_guru': 'Gwarzon Kuɗi',
         'badge_financial_guru_desc': 'An kammala gwajin halayen kuɗi tare da fahimta mai ƙarfi.',
         'badge_first_quiz': 'Wanda Ya Fara Ɗaukar Gwaji',
         'badge_first_quiz_desc': 'An kammala gwajin halayen kuɗi na farko.',
-        'Discover your financial personality and insights': 'Gano halayen ku na kuɗi da fahimta',
+        'badge_savings_star': 'Tauraron Ajiya',
+        'badge_savings_star_desc': 'An gane shi saboda halayen ajiya akai-akai.',
     }
 }

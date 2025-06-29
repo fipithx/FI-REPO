@@ -1,3 +1,7 @@
+"""
+Learning hub and courses translations for personal finance tools
+"""
+
 LEARNING_HUB_TRANSLATIONS = {
     'en': {
         # Course Titles & Descriptions
@@ -22,7 +26,7 @@ LEARNING_HUB_TRANSLATIONS = {
         'learning_hub_error_loading': 'Error loading content. Please try again.',
         'learning_hub_quiz_not_found': 'Quiz not found.',
         'learning_hub_quiz_completed': 'Quiz completed!',
-        'learning_hub_success_language_updated':'Language chnaged successfully!',
+        'learning_hub_success_language_updated': 'Language changed successfully!',
         'learning_hub_set_profile': 'Set up your profile.',
         'learning_hub_profile': 'Your Learning Profile',
         'learning_hub_profile_subtitle': 'Manage your personal details and learning preferences.',
@@ -72,7 +76,7 @@ LEARNING_HUB_TRANSLATIONS = {
         'learning_hub_testimonials': 'What People Are Saying About Us',
         'learning_hub_impressed_features': 'I explored today and was impressed... I thought it was only for SMEs, but I see value for individuals too!',
         'learning_hub_ficore_praise': '🔥 Ficore 🔥🔥🔥🔥🔥',
-        'learning_hub_potential_support': 'I’ve been following the Ficore project and I’m impressed. It’s clear there’s potential, and I look forward to supporting.',
+        'learning_hub_potential_support': 'I\'ve been following the Ficore project and I\'m impressed. It\'s clear there\'s potential, and I look forward to supporting.',
         'learning_hub_software_engineer': 'Software Engineer for Sustainable Solutions',
 
         # Courses UI
@@ -116,7 +120,7 @@ LEARNING_HUB_TRANSLATIONS = {
         'learning_hub_course_budgeting101_title': 'Tsarin Kasafin Kuɗi 101',
         'learning_hub_course_budgeting101_desc': 'Koyi ainihin tsarin kasafin kuɗi da shirin kuɗi.',
         'learning_hub_course_financial_quiz_title': 'Tambayoyin Halayyar Kuɗi',
-        'learning_hub_course_financial_quiz_desc': 'Gano halin kuɗin ku tare da wannan tambaya mai ma’amala.',
+        'learning_hub_course_financial_quiz_desc': 'Gano halin kuɗin ku tare da wannan tambaya mai ma\'amala.',
         'learning_hub_course_savings_basics_title': 'Asalin Ajiya',
         'learning_hub_course_savings_basics_desc': 'Fahimci ainihin hanyoyin adana kuɗi yadda ya kamata.',
         'learning_hub_course_not_found': 'Ba a samu wannan darasi ba.',
@@ -134,7 +138,7 @@ LEARNING_HUB_TRANSLATIONS = {
         'learning_hub_lesson_net_income_content': 'Fahimci abin da ake nufi da net income bayan cire kuɗaɗen aiki; net income ya haɗa da cire duk kuɗaɗen aiki, ciki har da haraji da tsadar aiki, daga jimillar kuɗin shiga don tantance ribar gaske.',
         'learning_hub_module_quiz_title': 'Sashen Jarabawa',
         'learning_hub_lesson_quiz_intro_title': 'Gabatar da Jarabawa',
-        'learning_hub_lesson_quiz_intro_content': 'Umarnin kan jarabawar kuɗi; Don jarabawar kuɗi, karanta umarni, bayanan kula, wuraren zama, da misalai a hankali, jiƙa lokaci yadda ya kamata, kuma sake duba mahimman ra/ayoyin kuɗi kafin a fara.',
+        'learning_hub_lesson_quiz_intro_content': 'Umarnin kan jarabawar kuɗi; Don jarabawar kuɗi, karanta umarni, bayanan kula, wuraren zama, da misalai a hankali, jiƙa lokaci yadda ya kamata, kuma sake duba mahimman ra\'ayoyin kuɗi kafin a fara.',
         'learning_hub_module_savings_title': 'Dabarun Ajiya',
         'learning_hub_lesson_savings_strategies_title': 'Yadda Za a Yi Ajiya Dace',
         'learning_hub_lesson_savings_strategies_content': 'Shawarwari da dabarun adana kuɗi; Don adana kuɗi, ƙirƙiri kasafin kuɗi tare da Ficore Africa, fifita buƙatu a kan son rai, sanya cire adanawa ta atomatik, da sayayya cikin dabara ta amfani da ragi ko sayayya a girma.',
@@ -220,26 +224,6 @@ LEARNING_HUB_TRANSLATIONS = {
         'learning_hub_profile_subtitle': 'Sarrafa bayanan sirrinki da abubuwan da kike so na koyo.',
         'learning_hub_profile_saved': 'An adana bayanan martaba cikin nasara!',
         'learning_hub_success_logout': 'An yi nasarar fitar da kai.',
-        'learning_hub_success_language_updated':'An Canza Yare Cikin Nasara!'       
+        'learning_hub_success_language_updated': 'An Canza Yare Cikin Nasara!'       
     }
 }
-
-def trans(key, lang='en', default=None):
-    '''
-    Retrieve translation for a given key and language.
-    '''
-    import logging
-    logger = logging.getLogger('ficore_app.translations')
-    translations = LEARNING_HUB_TRANSLATIONS.get(lang, {})
-    result = translations.get(key, default or key)
-    logger.debug(f'Translation request: key={key}, lang={lang}')
-    if result == key and default is None:
-        logger.warning(f'Missing translation for key={key} in lang={lang}, expected in module unknown_module')
-    logger.debug(f'Translation result: key={key}, lang={lang}, result={result}')
-    return result
-
-def get_translations(lang='en'):
-    '''
-    Get all translations for a given language.
-    '''
-    return LEARNING_HUB_TRANSLATIONS.get(lang, {})

@@ -26,68 +26,123 @@ logger = SessionAdapter(root_logger, {})
 
 # Import translation modules
 try:
-    from .translations_core import CORE_TRANSLATIONS as translations_core
-    from .translations_quiz import QUIZ_TRANSLATIONS as translations_quiz
-    from .translations_mailersend import MAILERSEND_TRANSLATIONS as translations_mailersend
-    from .translations_bill import BILL_TRANSLATIONS as translations_bill
-    from .translations_budget import BUDGET_TRANSLATIONS as translations_budget
-    from .translations_dashboard import DASHBOARD_TRANSLATIONS as translations_dashboard
-    from .translations_emergency_fund import EMERGENCY_FUND_TRANSLATIONS as translations_emergency_fund
-    from .translations_financial_health import FINANCIAL_HEALTH_TRANSLATIONS as translations_financial_health
-    from .translations_net_worth import NET_WORTH_TRANSLATIONS as translations_net_worth
-    from .translations_learning_hub import LEARNING_HUB_TRANSLATIONS as translations_learning_hub
+    # Personal Finance Tools
+    from .personal_finance.bill_translations import BILL_TRANSLATIONS
+    from .personal_finance.budget_translations import BUDGET_TRANSLATIONS
+    from .personal_finance.emergency_fund_translations import EMERGENCY_FUND_TRANSLATIONS
+    from .personal_finance.financial_health_translations import FINANCIAL_HEALTH_TRANSLATIONS
+    from .personal_finance.net_worth_translations import NET_WORTH_TRANSLATIONS
+    from .personal_finance.learning_hub_translations import LEARNING_HUB_TRANSLATIONS
+    from .personal_finance.quiz_translations import QUIZ_TRANSLATIONS
     
-    # Import main translations (treating as core-level but separate)
-    try:
-        from .main_translations import TRANSLATIONS as translations_main
-    except ImportError:
-        logger.warning("main_translations.py not found, using empty translations")
-        translations_main = {'en': {}, 'ha': {}}
-        
+    # Accounting Tools
+    from .accounting_tools.admin_translations import ADMIN_TRANSLATIONS
+    from .accounting_tools.agents_translations import AGENTS_TRANSLATIONS
+    from .accounting_tools.coins_translations import COINS_TRANSLATIONS
+    from .accounting_tools.creditors_translations import CREDITORS_TRANSLATIONS
+    from .accounting_tools.debtors_translations import DEBTORS_TRANSLATIONS
+    from .accounting_tools.inventory_translations import INVENTORY_TRANSLATIONS
+    from .accounting_tools.payments_translations import PAYMENTS_TRANSLATIONS
+    from .accounting_tools.receipts_translations import RECEIPTS_TRANSLATIONS
+    from .accounting_tools.reports_translations import REPORTS_TRANSLATIONS
+    
+    # General Tools
+    from .general_tools.general_translations import GENERAL_TRANSLATIONS
+    from .general_tools.common_features_translations import COMMON_FEATURES_TRANSLATIONS
+    
+    # Legacy imports for backward compatibility
+    from .translations_dashboard import DASHBOARD_TRANSLATIONS
+    from .translations_mailersend import MAILERSEND_TRANSLATIONS
+    
 except ImportError as e:
     logger.error(f"Failed to import translation module: {str(e)}", exc_info=True)
     raise
 
 # Map module names to translation dictionaries
 translation_modules = {
-    'core': translations_core,
-    'main': translations_main,  # Add main translations as separate module
-    'quiz': translations_quiz,
-    'mailersend': translations_mailersend,
-    'bill': translations_bill,
-    'budget': translations_budget,
-    'dashboard': translations_dashboard,
-    'emergency_fund': translations_emergency_fund,
-    'financial_health': translations_financial_health,
-    'net_worth': translations_net_worth,
-    'learning_hub': translations_learning_hub
+    # Personal Finance
+    'bill': BILL_TRANSLATIONS,
+    'budget': BUDGET_TRANSLATIONS,
+    'emergency_fund': EMERGENCY_FUND_TRANSLATIONS,
+    'financial_health': FINANCIAL_HEALTH_TRANSLATIONS,
+    'net_worth': NET_WORTH_TRANSLATIONS,
+    'learning_hub': LEARNING_HUB_TRANSLATIONS,
+    'quiz': QUIZ_TRANSLATIONS,
+    
+    # Accounting Tools
+    'admin': ADMIN_TRANSLATIONS,
+    'agents': AGENTS_TRANSLATIONS,
+    'coins': COINS_TRANSLATIONS,
+    'creditors': CREDITORS_TRANSLATIONS,
+    'debtors': DEBTORS_TRANSLATIONS,
+    'inventory': INVENTORY_TRANSLATIONS,
+    'payments': PAYMENTS_TRANSLATIONS,
+    'receipts': RECEIPTS_TRANSLATIONS,
+    'reports': REPORTS_TRANSLATIONS,
+    
+    # General Tools
+    'general': GENERAL_TRANSLATIONS,
+    'common_features': COMMON_FEATURES_TRANSLATIONS,
+    
+    # Legacy modules
+    'dashboard': DASHBOARD_TRANSLATIONS,
+    'mailersend': MAILERSEND_TRANSLATIONS,
 }
 
 # Map key prefixes to module names
 KEY_PREFIX_TO_MODULE = {
-    'core_': 'core',
-    'main_': 'main',  # Add main prefix mapping
-    'quiz_': 'quiz',
-    'badge_': 'quiz',  # Route badge_ keys to QUIZ_TRANSLATIONS
-    'mailersend_': 'mailersend',
+    # Personal Finance prefixes
     'bill_': 'bill',
     'budget_': 'budget',
-    'dashboard_': 'dashboard',
     'emergency_fund_': 'emergency_fund',
     'financial_health_': 'financial_health',
     'net_worth_': 'net_worth',
-    'learning_hub_': 'learning_hub'
+    'learning_hub_': 'learning_hub',
+    'quiz_': 'quiz',
+    'badge_': 'quiz',  # Route badge_ keys to quiz translations
+    
+    # Accounting Tools prefixes
+    'admin_': 'admin',
+    'agents_': 'agents',
+    'coins_': 'coins',
+    'creditors_': 'creditors',
+    'debtors_': 'debtors',
+    'inventory_': 'inventory',
+    'payments_': 'payments',
+    'receipts_': 'receipts',
+    'reports_': 'reports',
+    
+    # General Tools prefixes
+    'general_': 'general',
+    'news_': 'common_features',
+    'tax_': 'common_features',
+    'notifications_': 'common_features',
+    'search_': 'common_features',
+    'filter_': 'common_features',
+    'export_': 'common_features',
+    'import_': 'common_features',
+    'backup_': 'common_features',
+    'maintenance_': 'common_features',
+    'api_': 'common_features',
+    'webhook_': 'common_features',
+    
+    # Legacy prefixes
+    'dashboard_': 'dashboard',
+    'mailersend_': 'mailersend',
 }
 
 # Quiz-specific keys without prefixes
 QUIZ_SPECIFIC_KEYS = {'Yes', 'No', 'See Results'}
 
-# Main-specific keys without prefixes (common navigation and UI elements)
-MAIN_SPECIFIC_KEYS = {
+# General-specific keys without prefixes (common navigation and UI elements)
+GENERAL_SPECIFIC_KEYS = {
     'Home', 'About', 'Contact', 'Login', 'Logout', 'Register', 'Profile',
     'Settings', 'Help', 'Support', 'Terms', 'Privacy', 'FAQ', 'Documentation',
     'Get Started', 'Learn More', 'Try Now', 'Sign Up', 'Sign In', 'Welcome',
-    'Dashboard', 'Tools', 'Features', 'Pricing', 'Blog', 'News', 'Updates'
+    'Dashboard', 'Tools', 'Features', 'Pricing', 'Blog', 'News', 'Updates',
+    'Save', 'Cancel', 'Submit', 'Edit', 'Delete', 'Add', 'Create', 'Update',
+    'View', 'Search', 'Filter', 'Sort', 'Export', 'Import', 'Print', 'Download',
+    'Upload', 'Back', 'Next', 'Previous', 'Continue', 'Finish', 'Close', 'Open'
 }
 
 # Log loaded translations
@@ -101,7 +156,7 @@ def trans(key: str, lang: Optional[str] = None, **kwargs: str) -> str:
     Translate a key using the appropriate module's translation dictionary.
     
     Args:
-        key: The translation key (e.g., 'core_submit', 'main_welcome', 'quiz_yes', 'Yes').
+        key: The translation key (e.g., 'bill_submit', 'general_welcome', 'quiz_yes', 'Yes').
         lang: Language code ('en', 'ha'). Defaults to session['lang'] or 'en'.
         **kwargs: String formatting parameters for the translated string.
     
@@ -113,7 +168,7 @@ def trans(key: str, lang: Optional[str] = None, **kwargs: str) -> str:
         - Uses session['lang'] if lang is None and request context exists.
         - Logs warnings for missing translations.
         - Uses g.logger if available, else the default logger.
-        - Checks main translations for common UI elements without prefixes.
+        - Checks general translations for common UI elements without prefixes.
     """
     current_logger = g.get('logger', logger) if has_request_context() else logger
     session_id = session.get('sid', 'no-session-id') if has_request_context() else 'no-session-id'
@@ -126,7 +181,7 @@ def trans(key: str, lang: Optional[str] = None, **kwargs: str) -> str:
         lang = 'en'
 
     # Determine module based on key prefix or specific keys
-    module_name = 'core'
+    module_name = 'general'  # Default to general instead of core
     
     # Check for specific prefix mappings first
     for prefix, mod in KEY_PREFIX_TO_MODULE.items():
@@ -138,19 +193,19 @@ def trans(key: str, lang: Optional[str] = None, **kwargs: str) -> str:
     if key in QUIZ_SPECIFIC_KEYS and has_request_context() and '/quiz/' in request.path:
         module_name = 'quiz'
     
-    # Check for main-specific keys (common UI elements)
-    elif key in MAIN_SPECIFIC_KEYS:
-        module_name = 'main'
+    # Check for general-specific keys (common UI elements)
+    elif key in GENERAL_SPECIFIC_KEYS:
+        module_name = 'general'
     
-    # If no specific module found and key doesn't have a prefix, check main first, then core
+    # If no specific module found and key doesn't have a prefix, check general first
     elif '_' not in key:
-        # Try main module first for unprefixed keys
-        main_module = translation_modules.get('main', {})
-        main_lang_dict = main_module.get(lang, {})
-        if key in main_lang_dict:
-            module_name = 'main'
+        # Try general module first for unprefixed keys
+        general_module = translation_modules.get('general', {})
+        general_lang_dict = general_module.get(lang, {})
+        if key in general_lang_dict:
+            module_name = 'general'
 
-    module = translation_modules.get(module_name, translation_modules['core'])
+    module = translation_modules.get(module_name, translation_modules['general'])
     lang_dict = module.get(lang, {})
 
     # Get translation
@@ -209,7 +264,7 @@ def get_module_translations(module_name: str, lang: Optional[str] = None) -> Dic
     Get translations for a specific module and language.
     
     Args:
-        module_name: Name of the translation module (e.g., 'core', 'main', 'quiz').
+        module_name: Name of the translation module (e.g., 'general', 'bill', 'quiz').
         lang: Language code ('en', 'ha'). Defaults to session['lang'] or 'en'.
     
     Returns:

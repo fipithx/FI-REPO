@@ -3,7 +3,7 @@ Core translation module that provides the main trans function.
 This module serves as the primary interface for translations across the application.
 """
 
-from .translations_core import CORE_TRANSLATIONS
+from .general_tools.general_translations import GENERAL_TRANSLATIONS
 from flask import session, has_request_context, g
 import logging
 
@@ -28,18 +28,18 @@ def trans(key, lang=None, **kwargs):
 
 def get_translations(lang=None):
     """
-    Get all core translations for a language.
+    Get all general translations for a language.
     
     Args:
         lang: Language code ('en', 'ha'). Defaults to session['lang'] or 'en'
     
     Returns:
-        Dictionary of core translations
+        Dictionary of general translations
     """
     if lang is None:
         lang = session.get('lang', 'en') if has_request_context() else 'en'
     
-    return CORE_TRANSLATIONS.get(lang, CORE_TRANSLATIONS.get('en', {}))
+    return GENERAL_TRANSLATIONS.get(lang, GENERAL_TRANSLATIONS.get('en', {}))
 
 # Export the main trans function for backward compatibility
 __all__ = ['trans', 'get_translations']
