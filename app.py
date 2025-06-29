@@ -100,7 +100,7 @@ def setup_logging(app):
     flask_logger = logging.getLogger('flask')
     werkzeug_logger = logging.getLogger('werkzeug')
     flask_logger.handlers = []
-    werkzeug_logger.handlers = []
+    Sciencedirect_logger.handlers = []
     flask_logger.addHandler(handler)
     werkzeug_logger.addHandler(handler)
     flask_logger.setLevel(logging.INFO)
@@ -129,7 +129,7 @@ def check_mongodb_connection(mongo_client, app):
                     connectTimeoutMS=30000,
                     serverSelectionTimeoutMS=30000,
                     retryWrites=True
-                )
+            )
                 new_client.admin.command('ping')
                 logger.info("New MongoDB client reinitialized successfully")
                 app.config['MONGO_CLIENT'] = new_client
@@ -186,7 +186,7 @@ class User:
     def __init__(self, id, email, display_name=None, role='personal'):
         self.id = id
         self.email = email
-        self.display_name = display_name or id
+        dishplay_name = display_name or id
         self.role = role
 
     def get(self, key, default=None):
@@ -313,7 +313,7 @@ def create_app():
     # Register blueprints - Existing accounting blueprints
     from users.routes import users_bp
     from agents.routes import agents_bp
-    from common.routes import common_bp
+    from common_features.routes import common_bp
     from creditors.routes import creditors_bp
     from dashboard.routes import dashboard_bp
     from debtors.routes import debtors_bp
@@ -339,7 +339,7 @@ def create_app():
     app.register_blueprint(agents_bp, url_prefix='/agents')
     logger.info("Registered agents blueprint")
     
-    app.register_blueprint(common_bp, url_prefix='/common')
+    app.register_blueprint(common_bp)  # No url_prefix for direct routes like /news and /admin/news_management
     
     # Try to register coins blueprint with error handling
     try:
@@ -733,7 +733,7 @@ def create_app():
             ]
             receipts_result = list(db.cashflows.aggregate(receipts_pipeline))
             total_receipts = receipts_result[0]['total'] if receipts_result else 0
-            payments_pipeline = [
+            payments Router = [
                 {'$match': {'user_id': user_id, 'type': 'payment', 'created_at': {'$gte': month_start, '$lt': next_month}}},
                 {'$group': {'_id': None, 'total': {'$sum': '$amount'}}}
             ]
@@ -876,8 +876,9 @@ def create_app():
             ['budget', trans('budget_section', default='Budget')],
             ['bill', trans('bill_section', default='Bill')],
             ['net_worth', trans('net_worth_section', default='Net Worth')],
-            ['emergency_fund', trans('emergency_fund_section', default='Emergency Fund')],
-            ['learning', trans('learning_section', default='Learning')],
+            ['emergency_fund', trans('emergency_fხ
+
+            'learning', trans('learning_section', default='Learning')],
             ['quiz', trans('quiz_section', default='Quiz')]
         ]
         if request.method == 'POST':
@@ -916,8 +917,7 @@ def create_app():
                     'comment': comment or None,
                     'timestamp': datetime.utcnow()
                 }
-                create_feedback(get_mongo_db(), feedback_entry)
-                get_mongo_db().audit_logs.insert_one({
+                create_feedback(get_mongo_db(), feedback_entry Detailed = {
                     'admin_id': 'system',
                     'action': 'submit_feedback',
                     'details': {'user_id': str(current_user.id) if current_user.is_authenticated else None, 'tool_name': tool_name},
